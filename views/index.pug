@@ -1,13 +1,21 @@
-extends ../layout
+extends ./layout
 
 block content
-  h1= title
-  p Listing all books
+  h1 Books
   p
-    a(href="/books/new") Create New Book
-
-  each article in articles
-    h2= book.title
-    include by_line
-    p= book.shortDescription()
-    a(href = "/books/" + book.id) Read More &rarr;
+    a.button(href='new_book.html') Create New Book
+  table
+    thead
+      tr
+        th Title
+        th Author
+        th Genre
+        th Year
+    tbody
+      each book in books
+        tr
+          td
+            a(href='book_detail.html')= book.title
+          td= book.author
+          td= book.genre
+          td= book.year 

@@ -1,19 +1,25 @@
 const express = require('express');
 const path = require('path');
 const sequelize = require("./models").sequelize;
-const app = express();
+
 const routes = require('./routes/index');
 const books = require('./routes/books');
 
+const app = express();
+
+app.set('views', path.join(__dirname, 'views'));
 app.set('view engine', 'pug');
-app.use('/static', express.static(path.resolve('public')));
+
+app.use(express.static(path.join(__dirname, '/public')));
 
 app.use('/', routes);
-app.use('/book', books);
+app.use('/books', books);
 
-
-
-
+app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});
 
 sequelize.sync().then(function(){
   app.listen(process.env.PORT || 3000, () => {
@@ -22,3 +28,4 @@ sequelize.sync().then(function(){
 });
 //server.on('error', onError);
 //server.on('listening', onListening);
+module.exports = app;

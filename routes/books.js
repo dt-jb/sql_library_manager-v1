@@ -3,16 +3,13 @@ const router = express.Router();
 const Book = require("../models").Book;
 
 //GET / - Home route should redirect to the /books route.
-
 router.get('/', function(req, res, next) {
-  res.redirect("/books")
-});
-
-router.get('/', function(req, res, next) {
-  Article.findAll({order: [["createdAt", "DESC"]]}).then(function(books){
-    res.render('books/index', {books: books, title: 'My Awesome Library' });
+  Book.findAll({order: [["title", "DESC"]]}).then(books => {
+    //console.log(books);
+    res.render('index', {books});
+    //res.render('index', {books: books, title: 'My Awesome Library' });
   }).catch(function(err){
-    res.send(500);
+    res.sendStatus(500);
   });
 });
 
@@ -23,25 +20,5 @@ router.get('/', function(req, res, next) {
 //GET /books/:id - Shows book detail form.
 //POST /books/:id - Updates book info in the database.
 //POST /books/:id/delete - Deletes a book. Careful, this can’t be undone. It can be helpful to create a new “test” book to test deleting.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 module.exports = router;
