@@ -21,12 +21,12 @@ router.get('/new', (req, res, next) => {
 //POST /books/new - Posts a new book to the database.
 router.post('/new', (req, res, next) => {
   Book.create(req.body).then((book) => {
-    res.redirect("/books/");
+    res.redirect("/book");
   }).catch(function(err){
     if(err.name === "SequelizeValidationError"){
-      res.render('books/new', {
-        book: Books.build(req.body),
-        title: "Add a book",
+      res.render('books/new-book', {
+        book: Book.build(req.body),
+        title: "Add book",
         errors: err.errors
       });
     } else {
