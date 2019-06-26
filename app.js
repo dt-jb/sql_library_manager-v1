@@ -21,6 +21,16 @@ app.use(function(req, res, next) {
   next(err);
 });
 
+if (app.get('env') === 'development') {
+  app.use(function(err, req, res, next) {
+    res.status(err.status || 500);
+    res.render('error', {
+      message: err.message,
+      error: err
+    });
+  });
+}
+
 sequelize.sync().then(function(){
   app.listen(process.env.PORT || 3000, () => {
     console.log('The application is running on localhost:3000!');
