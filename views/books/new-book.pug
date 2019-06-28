@@ -2,7 +2,13 @@ extends ../layout
 
 block content
   h1 New Book
-  form(action='/new' method='post')
+  if(errors)
+    h2.errors Ooops an error occured!
+    ul.errors
+      each error in errors
+        li
+          =error.message
+  form(action='/books/new' method='post')
     p
       label(for='title') Title
       input#title(name='title', type='text')
