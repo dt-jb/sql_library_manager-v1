@@ -101,7 +101,7 @@ router.post('/:id/delete', (req, res, next) => {
 router.get('/search', (req, res) => {
   const { term } = req.query;
   Book.findAll({ where: {
-                    [Op.or]: [{title: { [Op.like]: `%${term}%` }}, {author: { [Op.like]: `%${term}%` }}, {genre: { [Op.like]: `%${term}%` }}]
+                    [Op.or]: [{title: { [Op.like]: `%${term}%` }}, {author: { [Op.like]: `%${term}%` }}, {genre: { [Op.like]: `%${term}%` }}, {year: { [Op.like]: `%${term}%` }}]
                   }
     }).then( books => {
       res.render('books/search-results', {books});
