@@ -21,8 +21,11 @@ block content
           td= book.author
           td= book.genre
           td= book.year
-
-    ul
-      for(let i = 1; i <= pages; i++)
-        li
-          a(class=``, href=`/books?page=${i}`)=i
+  p
+    if(currentPage === 1)
+      a.button(href=`/books?page=${parseInt(currentPage)+1}`) Next
+    else if(currentPage > 1 && books.length >= 10)
+      a.button(href=`/books?page=${parseInt(currentPage)-1}`) Back
+      a.button(style='margin-left:10px;', href=`/books?page=${parseInt(currentPage)+1}`) Next
+    else if(books.length < 10 && currentPage > 1)
+      a.button(href=`/books?page=${parseInt(currentPage)-1}`) Back

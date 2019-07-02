@@ -10,31 +10,21 @@ router.use(bodyParser.urlencoded({ extended: false }));
 
 //GET /books - Shows the full list of books.
 router.get('/', (req, res, next) => {
-  let numOfPages;
   const pageSize = 10;
+  let numOfPages;
   let currentPage = req.query.page;
   if(currentPage === undefined) {
     currentPage = 1;
   }
   let offset = (currentPage - 1) * pageSize;
-  let limit = offset + pageSize;
-
-  Book.count().then(count => {
-      //console.log(count);
-      numOfPages = Math.floor((count/pageSize) + 1);
-      //console.log(numOfPages);
-    });
-
-  //console.log(count);
-  console.log(`offset = ${offset}, limit = ${limit}, currentPage = ${currentPage}, numOfPages = ${numOfPages}`);
-
+  let limit = 10;
   Book.findAll({offset, limit, order: [["title", "DESC"]]}).then(books => {
-    res.render('books/index', {books, title: "Books List", pages, currentPage: req.query.page});
+    console.log(`offset = ${offset}, limit = ${limit}, currentPage = ${currentPage}, books.length = ${books.length}`);
+    res.render('books/index', {books, title: "Books List", currentPage});
   }).catch( err => {
     res.render('error', err);
   });
 });
-
 
 //GET /books/new - Shows the create new book form.
 router.get('/new', (req, res, next) => {
@@ -119,22 +109,6 @@ router.get('/search', (req, res) => {
     res.render('error', err);
   });
 });
-/*
-const search = document.getElementById('searchInput');
-search.addEventListener('change', () => {
-  if(books.title === search.value || books.author === search.value || books.gener === search.value){
-    console.log('theres a match');
-  } else {
-    console.log('no match');
-  }
-});
-*/
-/*
-Book.findAll({ where: { title: { [Op.like]: `%${term}%` } } })
-  .then( books => {
-    res.render('books/search-results', {books});
-  }).catch( err => {
-  res.render('error', err);
-});
-*/
+
+
 module.exports = router;
