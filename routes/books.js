@@ -1,6 +1,8 @@
 const express = require('express');
 const router = express.Router();
 const bodyParser = require('body-parser');
+const Sequelize = require('sequelize');
+const Op = Sequelize.Op;
 const Book = require("../models").Book;
 
 router.use(bodyParser.json());
@@ -8,14 +10,31 @@ router.use(bodyParser.urlencoded({ extended: false }));
 
 //GET /books - Shows the full list of books.
 router.get('/', (req, res, next) => {
-  Book.findAll({order: [["title", "DESC"]]}).then(books => {
-    console.log(req.body);
-    res.render('books/index', {books});
-    //res.render('index', {books: books, title: 'My Awesome Library' });
+  let numOfPages;
+  const pageSize = 10;
+  let currentPage = req.query.page;
+  if(currentPage === undefined) {
+    currentPage = 1;
+  }
+  let offset = (currentPage - 1) * pageSize;
+  let limit = offset + pageSize;
+
+  Book.count().then(count => {
+      //console.log(count);
+      numOfPages = Math.floor((count/pageSize) + 1);
+      //console.log(numOfPages);
+    });
+
+  //console.log(count);
+  console.log(`offset = ${offset}, limit = ${limit}, currentPage = ${currentPage}, numOfPages = ${numOfPages}`);
+
+  Book.findAll({offset, limit, order: [["title", "DESC"]]}).then(books => {
+    res.render('books/index', {books, title: "Books List", pages, currentPage: req.query.page});
   }).catch( err => {
     res.render('error', err);
   });
 });
+
 
 //GET /books/new - Shows the create new book form.
 router.get('/new', (req, res, next) => {
@@ -43,7 +62,7 @@ router.post('/new', (req, res, next) => {
 });
 
 //GET /books/:id - Shows book detail form.
-router.get('/:id', (req, res) => {
+router.get('/:id/update', (req, res) => {
     Book.findByPk(req.params.id).then( book => {
       if(book){
         res.render('books/update-book', {book: book, title: 'Edit Book'});
@@ -56,7 +75,7 @@ router.get('/:id', (req, res) => {
   });
 
 //POST /books/:id - Updates book info in the database.
-router.post('/:id', (req, res) => {
+router.post('/:id/update', (req, res) => {
   Book.create(req.body).then(() => {
     res.redirect("/");
   }).catch( err => {
@@ -89,5 +108,33 @@ router.post('/:id/delete', (req, res, next) => {
   });
 });
 
-
+router.get('/search', (req, res) => {
+  const { term } = req.query;
+  Book.findAll({ where: {
+                    [Op.or]: [{title: { [Op.like]: `%${term}%` }}, {author: { [Op.like]: `%${term}%` }}, {genre: { [Op.like]: `%${term}%` }}]
+                  }
+    }).then( books => {
+      res.render('books/search-results', {books});
+    }).catch( err => {
+    res.render('error', err);
+  });
+});
+/*
+const search = document.getElementById('searchInput');
+search.addEventListener('change', () => {
+  if(books.title === search.value || books.author === search.value || books.gener === search.value){
+    console.log('theres a match');
+  } else {
+    console.log('no match');
+  }
+});
+*/
+/*
+Book.findAll({ where: { title: { [Op.like]: `%${term}%` } } })
+  .then( books => {
+    res.render('books/search-results', {books});
+  }).catch( err => {
+  res.render('error', err);
+});
+*/
 module.exports = router;

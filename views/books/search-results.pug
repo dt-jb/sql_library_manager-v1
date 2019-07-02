@@ -1,0 +1,26 @@
+extends ../layout
+
+block content
+  h2 Search Results
+  if(books.length === 0)
+    h3 No Results Found
+      p
+        a.button(href='/') Back
+  else
+    table#table
+      thead
+        tr
+          th Title
+          th Author
+          th Genre
+          th Year
+      tbody
+        each book in books
+          tr
+            td
+              a(href=`/books/${book.id}/update`)= book.title
+            td= book.author
+            td= book.genre
+            td= book.year
+        p
+          a.button(href='/') Back

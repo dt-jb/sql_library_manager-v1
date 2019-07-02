@@ -4,7 +4,9 @@ block content
   h1 Books
   p
     a.button(href='/books/new') Create New Book
-  table
+  include search
+  p
+  table#table
     thead
       tr
         th Title
@@ -15,7 +17,12 @@ block content
       each book in books
         tr
           td
-            a(href=`/books/${book.id}`)= book.title
+            a(href=`/books/${book.id}/update`)= book.title
           td= book.author
           td= book.genre
           td= book.year
+
+    ul
+      for(let i = 1; i <= pages; i++)
+        li
+          a(class=``, href=`/books?page=${i}`)=i
